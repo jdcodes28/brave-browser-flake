@@ -210,12 +210,17 @@ stdenv.mkDerivation {
         exit 1
       fi
 
-      # Standard channels use brave-browser-<channel> as the binary name;
-      # origin builds use brave-origin-<channel>.
-      if [ -f "$out/opt/brave.com/$BRAVE_DIR/brave-browser-''${BRAVE_DIR##brave-}" ]; then
+      # Stable uses brave-browser, while beta/nightly append the channel.
+      # Origin builds use their directory name as the wrapper name.
+      if [ -f "$out/opt/brave.com/$BRAVE_DIR/brave-browser" ]; then
+        BRAVE_BINARY="brave-browser"
+      elif [ -f "$out/opt/brave.com/$BRAVE_DIR/brave-browser-''${BRAVE_DIR##brave-}" ]; then
         BRAVE_BINARY="brave-browser-''${BRAVE_DIR##brave-}"
-      else
+      elif [ -f "$out/opt/brave.com/$BRAVE_DIR/$BRAVE_DIR" ]; then
         BRAVE_BINARY="$BRAVE_DIR"
+      else
+        echo "Error: No Brave launcher found under $out/opt/brave.com/$BRAVE_DIR"
+        exit 1
       fi
 
       export BINARYWRAPPER=$out/opt/brave.com/$BRAVE_DIR/$BRAVE_BINARY
