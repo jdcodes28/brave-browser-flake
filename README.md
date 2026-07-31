@@ -61,6 +61,12 @@ This flake exports a NixOS module that allows you to configure Brave channels si
       "cjpalhdlnbpafiamejdnhcphjbkeiagm" # uBlock Origin
     ];
     defaultSearchProviderSearchURL = "https://search.brave.com/search?q={searchTerms}";
+
+    # Keep hardware-specific debugging flags scoped to the affected machine.
+    commandLineArgs = [
+      "--enable-zero-copy"
+    ];
+    vulkanSupport = true;
   };
 
   # You can also configure other channels independently

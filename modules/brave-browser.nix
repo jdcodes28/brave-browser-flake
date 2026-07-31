@@ -36,6 +36,14 @@ let
           '';
         };
 
+        vulkanSupport = mkOption {
+          type = types.bool;
+          default = false;
+          description = ''
+            Enable the package's Vulkan runtime integration.
+          '';
+        };
+
         extraOpts = mkOption {
           type = types.attrs;
           default = {};
@@ -72,18 +80,19 @@ let
 
       config = mkIf cfg.enable {
         environment.systemPackages = [
-          (if cfg.commandLineArgs != [] then
-            pkgs.symlinkJoin {
-              name = "${cfg.package.name}-wrapped";
-              paths = [ cfg.package ];
-              buildInputs = [ pkgs.makeWrapper ];
-              postBuild = ''
-                wrapProgram $out/bin/${pkgName} \
-                  --add-flags "${lib.escapeShellArgs cfg.commandLineArgs}"
-              '';
-            }
-          else
-            cfg.package)
+          (
+            if cfg.commandLineArgs != [ ] || cfg.vulkanSupport then
+              cfg.package.override (
+                optionalAttrs (cfg.commandLineArgs != [ ]) {
+                  inherit (cfg) commandLineArgs;
+                }
+                // optionalAttrs cfg.vulkanSupport {
+                  inherit (cfg) vulkanSupport;
+                }
+              )
+            else
+              cfg.package
+          )
         ];
 
         environment.etc."${policyDir}/managed/${name}.json".text = builtins.toJSON (
