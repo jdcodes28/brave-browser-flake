@@ -5,8 +5,8 @@
   vulkanSupport ? false,
 }:
 let
-  version = "1.99.44";
-  hash = "0q450c9clwy5dv0cr7ff470zmjnz6jc0gsksi6ra1d0216jca1pz";
+  version = "1.100.44";
+  hash = "1ik005j2zbvgdg93nadjgkrqc4jb498sd91mb6i0hlb570mgnrgf";
 in
 callPackage ./build-brave.nix { inherit vulkanSupport; } {
   pname = "brave-origin-beta";
